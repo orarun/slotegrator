@@ -1,0 +1,44 @@
+# Create user-defined chains
+iptables -N NORESTRICTIONS
+iptables -N DBAPPSERVERS
+iptables -N ONDEMAND
+iptables -N TEMPUSERS
+iptables -N INTERNET
+
+# Allow any traffic for certain IP addresses
+iptables -A NORESTRICTIONS -s 192.168.1.1 -j ACCEPT -m comment --comment "Privileged host1"
+iptables -A NORESTRICTIONS -s 192.168.1.2 -j ACCEPT -m comment --comment "Privileged host2"
+
+# Allow DB and application servers' IP addresses
+iptables -A DBAPPSERVERS -s 10.0.0.10 -j ACCEPT -m comment --comment "DB host1"
+iptables -A DBAPPSERVERS -s 10.0.0.11 -j ACCEPT -m comment --comment "App host1"
+
+# Allow on-demand access for specific users' IP addresses
+iptables -A ONDEMAND -s 192.168.2.1 -j ACCEPT -m comment --comment "On-demand host1"
+iptables -A ONDEMAND -s 192.168.2.2 -j ACCEPT -m comment --comment "On-demand host2"
+
+# Allow limited access for temporary users
+iptables -A TEMPUSERS -s 192.168.3.1 -p tcp -m multiport --dports 22,80,443 -j ACCEPT -m comment --comment "Temp host1"
+iptables -A TEMPUSERS -s 192.168.3.2 -p tcp -m multiport --dports 22,80,443 -j ACCEPT -m comment --comment "Temp host2"
+
+# Allow specific ports access to the Internet
+iptables -A INTERNET -p tcp -m multiport --dports 80,443 -j ACCEPT -m comment --comment "Restricted host1"
+iptables -A INTERNET -p udp --dport 53 -j ACCEPT -m comment --comment "Restricted host2"
+
+# Add IP addresses to respective chains
+iptables -A INPUT -j NORESTRICTIONS
+iptables -A INPUT -j DBAPPSERVERS
+iptables -A INPUT -j ONDEMAND
+iptables -A INPUT -j TEMPUSERS
+iptables -A OUTPUT -j INTERNET
+
+# Log and drop all other traffic
+iptables -A INPUT -j LOG --log-prefix "Blocked: " --log-level 4
+iptables -A INPUT -j DROP
+
+# Log all chains separately
+iptables -A NORESTRICTIONS -j LOG --log-prefix "No Restrictions: " --log-level 4
+iptables -A DBAPPSERVERS -j LOG --log-prefix "DB and App Servers: " --log-level 4
+iptables -A ONDEMAND -j LOG --log-prefix "On-Demand: " --log-level 4
+iptables -A TEMPUSERS -j LOG --log-prefix "Temporary Users: " --log-level 4
+iptables -A INTERNET -j LOG --log-prefix "Internet Access: " --log-level 4

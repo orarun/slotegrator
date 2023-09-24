@@ -1,0 +1,7 @@
+~/backup {
+	monthly
+	rotate 5
+	compress
+	missingok
+	create 755 user user
+}

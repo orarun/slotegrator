@@ -1,0 +1,26 @@
+---
+- name: Install php-fpm
+  apt:
+    update_cache: yes
+    name: php-fpm
+    state: present
+
+- name: Create logs directory
+  file:
+    path: "/var/log/php-fpm"
+    state: directory
+
+- name: Remove default FPM pool
+  file:
+    state: absent
+    path: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
+
+- name: Generate PHP socket config
+  template:
+    src: php_socket_config_template.j2
+    dest: "/etc/php/{{ php_version }}/fpm/pool.d/{{ domain }}.conf"
+
+- name: Restart php-fpm
+  service:
+    name: php{{ php_version }}-fpm
+    state: restarted

@@ -1,0 +1,11 @@
+domain: mysite.com
+server_name: mysite.com
+enable_https: true
+generate_ssl_certs: true
+php_socket: /var/run/php/php-fpm-{{ domain }}.sock
+php_logs: /var/log/php-fpm/{{ domain }}.access.log
+php_version: 8.1
+pm_max_children: 10
+pm_start_servers: 4
+pm_min_spare_servers: 2
+pm_max_spare_servers: 6

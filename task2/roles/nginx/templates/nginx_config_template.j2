@@ -1,0 +1,22 @@
+server {
+    listen 80;
+    server_name {{ server_name }};
+    root /var/www/{{ domain }};
+    index index.php index.html index.htm;
+
+    {% if enable_https %}
+    listen 443 ssl;
+    ssl_certificate /etc/ssl/certs/{{ domain }}-selfsigned.crt;
+    ssl_certificate_key /etc/ssl/private/{{ domain }}-selfsigned.key;
+    ssl_dhparam /etc/ssl/certs/dhparam.pem;
+    {% endif %}
+
+    location / {
+        try_files $uri =404;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:{{ php_socket }};
+    }
+}

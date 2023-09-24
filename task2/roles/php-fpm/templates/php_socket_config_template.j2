@@ -1,0 +1,16 @@
+[{{ domain }}]
+
+user = www-data
+group = www-data
+
+listen = {{ php_socket }}
+listen.owner = www-data
+listen.group = www-data
+
+pm = dynamic
+pm.max_children = {{ pm_max_children }}
+pm.start_servers = {{ pm_start_servers }}
+pm.min_spare_servers = {{ pm_min_spare_servers }}
+pm.max_spare_servers = {{ pm_max_spare_servers }}
+
+access.log = {{ php_logs }}

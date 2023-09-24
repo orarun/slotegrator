@@ -1,0 +1,6 @@
+- name: Install NGINX and PHP-FPM
+  hosts: all
+  become: true
+  roles:
+    - nginx
+    - php-fpm
